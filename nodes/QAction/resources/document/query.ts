@@ -14,7 +14,7 @@ export const documentQueryDescription: INodeProperties[] = [
 		displayOptions: {
 			show: showOnlyForDocumentQuery,
 		},
-		placeholder: 'classification-id-1, classification-id-2',
+		placeholder: 'classification-ID-1, classification-ID-2',
 		description: 'Comma-separated list of classification IDs to filter by (optional)',
 	},
 	{
@@ -25,7 +25,7 @@ export const documentQueryDescription: INodeProperties[] = [
 		displayOptions: {
 			show: showOnlyForDocumentQuery,
 		},
-		placeholder: 'doc-type-id-1, doc-type-id-2',
+		placeholder: 'doc-type-ID-1, doc-type-ID-2',
 		description: 'Comma-separated list of document type IDs to filter by (optional)',
 	},
 	{
