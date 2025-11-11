@@ -1,9 +1,4 @@
-import type {
-	ICredentialTestRequest,
-	ICredentialType,
-	INodeProperties,
-	Icon,
-} from 'n8n-workflow';
+import type { ICredentialTestRequest, ICredentialType, INodeProperties, Icon } from 'n8n-workflow';
 
 export class QActionApi implements ICredentialType {
 	name = 'qActionApi';
@@ -47,7 +42,7 @@ export class QActionApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.apiUrl}}',
-			url: '/api/authentication/login',
+			url: '/api/v1/authentication/login',
 			method: 'POST',
 			headers: {
 				'X-Client-Id': '={{$credentials.clientId}}',

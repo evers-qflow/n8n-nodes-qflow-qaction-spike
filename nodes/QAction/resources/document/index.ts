@@ -10,6 +10,7 @@ import type {
 	IN8nHttpFullResponse,
 } from 'n8n-workflow';
 import { documentDownloadDescription } from './download';
+import { documentQueryDescription } from './query';
 import { withAuth } from '../../shared/transport';
 
 const showOnlyForDocument = {
@@ -113,8 +114,85 @@ export const documentDescription: INodeProperties[] = [
 					},
 				},
 			},
+			{
+				name: 'Query',
+				value: 'query',
+				action: 'Query documents',
+				description: 'Query for documents using search criteria',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '/api/v1/document/query',
+					},
+					send: {
+						preSend: [
+							withAuth(),
+							async function (
+								this:
+									| IExecuteFunctions
+									| IExecuteSingleFunctions
+									| ILoadOptionsFunctions
+									| IHookFunctions,
+								requestOptions: IHttpRequestOptions,
+							): Promise<IHttpRequestOptions> {
+								const classificationIds = this.getNodeParameter('classificationIds', 0, '') as string;
+								const documentTypeIds = this.getNodeParameter('documentTypeIds', 0, '') as string;
+								const queryFields = this.getNodeParameter('queryFields', 0, {}) as IDataObject;
+								const options = this.getNodeParameter('options', 0, {}) as IDataObject;
+
+								// Build the request body
+								const body: IDataObject = {};
+
+								// Parse comma-separated classification IDs
+								if (classificationIds.trim()) {
+									body.classificationIds = classificationIds
+										.split(',')
+										.map((id) => id.trim())
+										.filter((id) => id.length > 0);
+								}
+
+								// Parse comma-separated document type IDs
+								if (documentTypeIds.trim()) {
+									body.documentTypeIds = documentTypeIds
+										.split(',')
+										.map((id) => id.trim())
+										.filter((id) => id.length > 0);
+								}
+
+								// Build the query fields array
+								const fields = [];
+								if (queryFields.fields && Array.isArray(queryFields.fields)) {
+									for (const field of queryFields.fields) {
+										fields.push({
+											name: field.name,
+											value: field.value,
+											type: field.type,
+										});
+									}
+								}
+								if (fields.length > 0) {
+									body.fields = fields;
+								}
+
+								requestOptions.body = body;
+
+								// Add pagination parameters if enabled
+								if (options.enablePagination) {
+									requestOptions.qs = {
+										pageSize: options.pageSize || 50,
+										pageNumber: options.pageNumber || 0,
+									};
+								}
+
+								return requestOptions;
+							},
+						],
+					},
+				},
+			},
 		],
 		default: 'download',
 	},
 	...documentDownloadDescription,
+	...documentQueryDescription,
 ];
